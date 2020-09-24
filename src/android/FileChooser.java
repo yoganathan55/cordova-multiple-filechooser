@@ -60,24 +60,31 @@ public class FileChooser extends CordovaPlugin {
         if (requestCode == PICK_FILE_REQUEST && callback != null) {
 
             if (resultCode == Activity.RESULT_OK) {
-
-                Uri uri = data.getData();
-
+                Uri uri = null;
+                JSONArray array = new JSONArray();
+            if(null != data.getClipData()) { // checking multiple selection or not
+                for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+                    uri = data.getClipData().getItemAt(i).getUri();
+                    array.add(uri);
+                }
+            }else {
+                uri = data.getData();
+                array.add(uri);
+            }
                 if (uri != null) {
-
                     Log.w(TAG, uri.toString());
-                    callback.success(uri.toString());
+                    callback.success(array);
 
                 } else {
 
-                    callback.error("File uri was null");
+                    callback.error("File uri **** was null");
 
                 }
 
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 // keep this string the same as in iOS document picker plugin
                 // https://github.com/iampossible/Cordova-DocPicker
-                callback.error("User canceled.");
+                callback.error("User canceled *****.");
             } else {
 
                 callback.error(resultCode);
